@@ -27,6 +27,7 @@ class OrdersController < ApplicationController
   # POST /orders.json
   def create
     @order = Order.new(order_params)
+    @order.order_state = OrderState.find_by(name: 'Ordered')
 
     respond_to do |format|
       if @order.save

@@ -1,4 +1,4 @@
-<%= form_for(@order_detail) do |f| %>
+<%= simple_form_for(@order_detail) do |f| %>
   <% if @order_detail.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@order_detail.errors.count, "error") %> prohibited this order_detail from being saved:</h2>
@@ -11,19 +11,12 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :amount %><br>
-    <%= f.text_field :amount %>
-  </div>
-  <div class="field">
-    <%= f.label :order_id %><br>
-    <%= f.text_field :order_id %>
-  </div>
-  <div class="field">
-    <%= f.label :product_id %><br>
-    <%= f.text_field :product_id %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+  
+  <%= f.input :product_id, collection: @products %>
+
+  <%= f.input :amount %>
+
+  <% f.input :order_id %>
+  
+  <%= f.button :submit, :class => 'btn btn-primary', :value => 'Confirmar' %>
 <% end %>

@@ -14,11 +14,13 @@ class OrderDetailsController < ApplicationController
 
   # GET /order_details/new
   def new
+    @products = Product.all
     @order_detail = OrderDetail.new
   end
 
   # GET /order_details/1/edit
   def edit
+    @products = Product.all
   end
 
   # POST /order_details
