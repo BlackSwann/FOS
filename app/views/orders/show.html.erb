@@ -1,14 +1,50 @@
 <p id="notice"><%= notice %></p>
 
-<p>
-  <strong>Final price:</strong>
-  <%= @order.final_price %>
-</p>
+
 
 <p>
   <strong>Order state:</strong>
   <%= @order.order_state %>
-</p>
+  </p>
+  <p>
+      <table class="table table-hover table-striped tablesorter">
+                <thead>
+                  <tr>
+                    <th class="col-lg-3"> Product</th>
+		    <th class="col-lg-3"> Amount</th>
+		    <th class="col-lg-3"> Price per Unit</th>
+		    <th class="col-lg-1"> Subtotal</th>
+	    </tr>
+	</thead>
+                <tbody>
+                    <tr>
+	<% for detail in @order.order_details %>
+                        <td>
+		<%=   detail.product.name %>
+	</td>
+                        <td>
+
+		<%= detail.amount %>
+	</td>
+                        <td>
+		<%= detail.product.price %>
+	</td>
+                        <td>
+		<%= detail.product.price * detail.amount %>
+	</td>
+
+		    </tr>
+	    <% end %>
+		    <tr>
+	    <td> </td>
+	    <td> </td>
+	    <td> </td>
+	    <td> <%= @order.final_price %></td>
+	    <td>TOTAL </td>
+		    </tr>
+ </tbody>
+  </table>
+  </p>
 
 <%= link_to 'Edit', edit_order_path(@order) %> |
 <%= link_to 'Back', orders_path %>

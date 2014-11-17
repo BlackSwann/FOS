@@ -15,6 +15,7 @@ class OrdersController < ApplicationController
   # GET /orders/new
   def new
     @states = OrderState.all
+    @products = Product.all
     @order = Order.new
   end
 
@@ -28,11 +29,16 @@ class OrdersController < ApplicationController
   def create
     @order = Order.new(order_params)
     @order.order_state = OrderState.find_by(name: 'Ordered')
+    @order.final_price = 0
+    for detail in @order.order_details
+	    @order.final_price = @order.final_price + (detail.amount * detail.product.price)
+    end
 
     respond_to do |format|
       if @order.save
         format.html { redirect_to @order, notice: 'Order was successfully created.' }
         format.json { render :show, status: :created, location: @order }
+	format.js   { render action: 'show', status: :created, location: @oder }
       else
         format.html { render :new }
         format.json { render json: @order.errors, status: :unprocessable_entity }
@@ -72,6 +78,6 @@ class OrdersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def order_params
-      params.require(:order).permit(:final_price, :order_state_id)
+      params.require(:order).permit(:final_price, :order_state_id, order_details_attributes: [:id, :name, :amount, :product_id, :_destroy])
     end
 end
