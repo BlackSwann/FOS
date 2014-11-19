@@ -1,0 +1,78 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Orders</h1>
+
+      <table class="table table-hover table-striped tablesorter">
+  <thead>
+	  <tr>
+      <th class="col-lg-2">Table number</th>
+      <th class="col-lg-1">Order state</th>
+      <th class="col-lg-1">Final price</th>
+      <th class="col-lg-2">Actions</th>
+      <th class="col-lg-8">Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @orders.each do |order| %>
+      <tr style="">
+
+        <td><%= order.table %></td>
+        <td><%= order.order_state %></td>
+        <td><%= order.final_price %></td>
+        <td><%= link_to 'Show', order %> | <%= link_to 'Edit', edit_order_path(order) %> | <%= link_to 'Destroy', order, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td>
+        <table>
+		    <tr><td><div class="accordion" id="accordion2">
+					  <div class="accordion-group">
+					    <div class="accordion-heading">
+					      <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapse<%=order.id%>">
+					        Order Details
+					      </a>
+					    </div>
+					    <div id="collapse<%=order.id%>" class="accordion-body collapse">
+					      <div class="accordion-inner">
+					            <table class="table tablesorter">
+					            	 <thead>
+										  <tr>
+									      <th class="col-lg-2">Product</th>
+									      <th class="col-lg-2">Amount</th>
+									      <th class="col-lg-2">Price</th>
+									      <th class="col-lg-2">Subtotal</th>
+									
+									      <th colspan="3"></th>
+									    </tr>
+									 </thead>
+								    <tr>
+								    	
+						    	       <% for detail in order.order_details.each %>
+								            <td><%= detail.product.name %></td>
+								            <td><%= detail.amount %></td>
+								            <td><%= detail.product.price %></td>
+								            <td><%= detail.product.price * detail.amount %></td>
+										<% end %>		
+								    	
+								    </tr>
+								    <tr><td>nested table</td></tr>
+							    </table>
+					      </div>
+					    </div>
+					  </div>
+  				</div>
+  			</td></tr>
+	    </table>
+	    </td>
+      </tr>
+          
+      
+      
+      
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+
+
+
