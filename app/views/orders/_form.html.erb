@@ -12,31 +12,24 @@
   <% end %>
 
 
-
+  <strong> Select your Products: </strong>
   <%= f.fields_for :order_details do |detail_form| %>
 	  <%= detail_form.collection_select :product_id, Product.order(:name),:id,:name, include_blank: true %>
 
 	    <%= detail_form.number_field :amount %>
 	      <%= detail_form.link_to_remove "Remove this task" %>
       <% end %>
-<p><%= f.link_to_add "Add a task", :order_details %></p>
+      <p><%= f.link_to_add "Add a Product", :order_details%></p>
 
-<%# for product in @products %>
-  			<div>
-  				<%#= check_box_tag "order[product_ids][]", product.id %>
-				<%#= product.name %>
-				<%#= number_field "order[product_ids][]",  %>
-  			</div>
-<%# end %>
   
-
-
-  <%#= f.text_field :final_price %>
-
-  <%#= f.input :order_state_id, collection: @states %>
+<p>
+<strong> Table number: </strong>
+<br/>
+<%= f.number_field :table %>
+</p>
 
  <div class="actions">
-    <%= f.submit %>
+    <%= f.submit class: "btn btn-default " %>
   </div>
 
 

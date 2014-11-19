@@ -70,6 +70,10 @@ class OrdersController < ApplicationController
     end
   end
 
+  def take_orders
+	  @orders = Order.all.where('order_state_id =? OR order_state_id =?', OrderState.find_by(name: 'Ordered'), OrderState.find_by(name: 'Delivered')) 
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_order
