@@ -50,3 +50,5 @@ group :development, :test do
   gem 'spring'
 end
 gem "nested_form"
+gem 'carrierwave'
+gem 'mini_magick', '3.8.0'

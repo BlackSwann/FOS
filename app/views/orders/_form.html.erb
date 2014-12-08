@@ -17,7 +17,7 @@
 	  <%= detail_form.collection_select :product_id, Product.order(:name),:id,:name, include_blank: true %>
 
 	    <%= detail_form.number_field :amount %>
-	      <%= detail_form.link_to_remove "Remove this task" %>
+	      <%= detail_form.link_to_remove "Remove this product" %>
       <% end %>
       <p><%= f.link_to_add "Add a Product", :order_details%></p>
 
@@ -25,8 +25,16 @@
 <p>
 <strong> Table number: </strong>
 <br/>
-<%= f.number_field :table %>
+ <%= f.collection_select :table_id, @tables, :id, :number %>
 </p>
+
+<% if !@order.order_state.nil? %>
+    <p>
+    <strong> State: </strong>
+    <br/>
+     <%= f.collection_select :order_state_id, @order_states, :id, :name %>
+    </p>
+<% end %>
 
  <div class="actions">
     <%= f.submit class: "btn btn-default " %>

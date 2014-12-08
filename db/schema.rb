@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141118125110) do
+ActiveRecord::Schema.define(version: 20141208133837) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,10 +38,11 @@ ActiveRecord::Schema.define(version: 20141118125110) do
     t.integer  "order_state_id"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
-    t.integer  "table"
+    t.integer  "table_id"
   end
 
   add_index "orders", ["order_state_id"], name: "index_orders_on_order_state_id", using: :btree
+  add_index "orders", ["table_id"], name: "index_orders_on_table_id", using: :btree
 
   create_table "product_types", force: true do |t|
     t.string   "name"
@@ -58,5 +59,20 @@ ActiveRecord::Schema.define(version: 20141118125110) do
   end
 
   add_index "products", ["product_type_id"], name: "index_products_on_product_type_id", using: :btree
+
+  create_table "table_states", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tables", force: true do |t|
+    t.integer  "number"
+    t.integer  "table_state_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "tables", ["table_state_id"], name: "index_tables_on_table_state_id", using: :btree
 
 end

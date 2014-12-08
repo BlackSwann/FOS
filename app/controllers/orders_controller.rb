@@ -17,11 +17,15 @@ class OrdersController < ApplicationController
     @states = OrderState.all
     @products = Product.all
     @order = Order.new
+    @tables = Table.where(table_state: TableState.find_by(name: 'Free')).to_a
+    p @tables
   end
 
   # GET /orders/1/edit
   def edit
-    @states = OrderState.all
+    @products = Product.all
+    @order_states = OrderState.all
+    @tables = Table.where(table_state: TableState.find_by(name: 'Free')).to_a
   end
 
   # POST /orders
@@ -34,8 +38,13 @@ class OrdersController < ApplicationController
 	    @order.final_price = @order.final_price + (detail.amount * detail.product.price)
     end
 
+
     respond_to do |format|
       if @order.save
+    @table = @order.table
+   @table.table_state = TableState.find_by(name: 'Occupied')
+  @table.save
+
         format.html { redirect_to @order, notice: 'Order was successfully created.' }
         format.json { render :show, status: :created, location: @order }
 	format.js   { render action: 'show', status: :created, location: @oder }
@@ -82,6 +91,6 @@ class OrdersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def order_params
-      params.require(:order).permit(:final_price, :order_state_id, order_details_attributes: [:id, :name, :amount, :product_id, :_destroy])
+      params.require(:order).permit(:final_price, :order_state_id, :table_id, order_details_attributes: [:id, :name, :amount, :product_id, :_destroy])
     end
 end

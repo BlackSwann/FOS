@@ -2,7 +2,7 @@
 
   <p>
   <strong>Table number:</strong>
-  <%= @order.table %>
+  <%= @order.table.number %>
   </p>
 
 <p>
@@ -50,4 +50,4 @@
   </p>
 
 <%= link_to 'Edit', edit_order_path(@order) %> |
-<%= link_to 'Back', orders_path %>
+<%= link_to 'Back', orders_take_orders_path%>
