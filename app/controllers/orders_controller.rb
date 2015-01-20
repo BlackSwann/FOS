@@ -1,5 +1,6 @@
 class OrdersController < ApplicationController
   before_action :set_order, only: [:show, :edit, :update, :destroy]
+  before_action :logged, except: [:new, :create, :show]
 
   # GET /orders
   # GET /orders.json
@@ -25,7 +26,8 @@ class OrdersController < ApplicationController
   def edit
     @products = Product.all
     @order_states = OrderState.all
-    @tables = Table.where(table_state: TableState.find_by(name: 'Free')).to_a
+    @tables = Table.where(table_state: TableState.find_by(name: 'Free'))
+    @tables << @order.table
   end
 
   # POST /orders
@@ -58,8 +60,23 @@ class OrdersController < ApplicationController
   # PATCH/PUT /orders/1
   # PATCH/PUT /orders/1.json
   def update
+    
+    @table = @order.table
     respond_to do |format|
       if @order.update(order_params)
+	      if @table != @order.table 
+		 @table.table_state = TableState.find_by(name: 'Free') 
+		 @table.save
+		 @table_now = @order.table
+		 @table_now.table_state = TableState.find_by(name: 'Occupied') 
+		 @table_now.save
+	      end
+	      if OrderState.find(params[:order][:order_state_id]).name == "Paid" 
+                 @table = @order.table
+		 @table.table_state = TableState.find_by(name: 'Free') 
+		 @table.save
+	      end
+
         format.html { redirect_to @order, notice: 'Order was successfully updated.' }
         format.json { render :show, status: :ok, location: @order }
       else

@@ -6,6 +6,7 @@ class Order < ActiveRecord::Base
 
  # attr_accessible :order_details_attributes
 accepts_nested_attributes_for :order_details, :allow_destroy => true, :reject_if => :all_blank, reject_if: :invalid_amount
+accepts_nested_attributes_for :order_details, :allow_destroy => true, :reject_if => :all_blank, reject_if: :invalid_product
 
   validates :table, :presence => true
 
@@ -18,7 +19,10 @@ accepts_nested_attributes_for :order_details, :allow_destroy => true, :reject_if
 
   private
   def invalid_amount(attributes)
-	  attributes['amount'].nil?
+	  attributes['amount'].blank?
+  end
+  def invalid_product(attributes)
+	  attributes['product'].blank?
   end
 
 end

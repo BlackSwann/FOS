@@ -2,6 +2,9 @@
 
 <h1>Listing Products</h1>
 
+	<% if admin? %>
+		<%= link_to 'New Product', new_product_path %>
+	<% end %>
 <% @products= @products.in_groups_of( (@products.size/2.0).ceil, false ) if @products.size > 0 %>
 <% @products.first.each_with_index do |product_p,index|  %>
 
@@ -15,20 +18,32 @@
               <p>Price: <%= product_p.price %></p>
               <p>Product type: <%= product_p.product_type%></p>
             </div>
+	<% if admin? %>
+          
+        <td><%= link_to 'Edit', edit_product_path(product_p) %></td>
+	<td><%= link_to 'Destroy', product_p, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+<% end %>
           </div>
         </div>
       
 
+		  <% unless @products[1][index].nil? %>
          <div class="col-sm-6 col-md-4">
           <div class="thumbnail">
-        <!--     <img data-src="" alt="...">   -->
+		  <!--     <img data-src="" alt="...">   -->
+
             <div class="caption">
               <h3><%= @products[1][index].name %></h3>
               <p>Price: <%= @products[1][index].price %></p>
               <p>Product type: <%= @products[1][index].product_type%></p>
             </div>
+	<% if admin? %>
+        <td><%= link_to 'Edit', edit_product_path(@products[1][index]) %></td>
+	<td><%= link_to 'Destroy', @products[1][index], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% end %>
           </div>
-        </div>
+  </div>
+  <% end %>
       </div>
     
 <% end %>

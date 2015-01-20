@@ -14,21 +14,27 @@
         <!--     <img data-src="" alt="...">   -->
             <div class="caption">
               <h3><%= table.number %></h3>
-              <p>Price: <%= table.table_state %></p>
+              <p>Status: <%= table.table_state %></p>
             </div>
+        <td><%= link_to 'Edit', edit_table_path(table) %></td>
+        <td><%= link_to 'Destroy', @tables[1][index], method: :delete, data: { confirm: 'Are you sure?' } %></td>
           </div>
         </div>
       
 
+		  <% unless @tables[1][index].nil? %>
          <div class="col-sm-6 col-md-4">
           <div class="thumbnail">
         <!--     <img data-src="" alt="...">   -->
             <div class="caption">
               <h3><%= @tables[1][index].number %></h3>
-              <p>Price: <%= @tables[1][index].table_state %></p>
+              <p>Status: <%= @tables[1][index].table_state %></p>
             </div>
+        <td><%= link_to 'Edit', edit_table_path(@tables[1][index]) %></td>
+        <td><%= link_to 'Destroy', @tables[1][index], method: :delete, data: { confirm: 'Are you sure?' } %></td>
           </div>
-        </div>
+  </div>
+  <% end %>
       </div>
     
 <% end %>

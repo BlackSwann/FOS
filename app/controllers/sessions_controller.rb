@@ -4,8 +4,9 @@ class SessionsController < ApplicationController
   end
 
   def create
-     session[:password] = params[:password]
-     flash[:notice] = "Sucessfully logged in"
+     session[:password] = Digest::SHA512.hexdigest(params[:password])
+     flash[:notice] = "Sucessfully logged in" if admin?
+     flash[:notice] = "The password is not valid" unless admin?
      redirect_to root_path
   end
 

@@ -1,5 +1,6 @@
 class TablesController < ApplicationController
   before_action :set_table, only: [:show, :edit, :update, :destroy]
+  before_action :logged 
 
   # GET /tables
   # GET /tables.json
@@ -73,4 +74,6 @@ class TablesController < ApplicationController
     def table_params
       params.require(:table).permit(:number, :table_state_id)
     end
+
+
 end

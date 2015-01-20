@@ -10,6 +10,11 @@ class ApplicationController < ActionController::Base
   protected 
 
   def admin?
-     session[:password] == 'foorbar'
+     password = Digest::SHA512.hexdigest('admin')
+     session[:password] == password 
   end
+
+    def logged
+	    redirect_to login_path unless admin?
+    end
 end
