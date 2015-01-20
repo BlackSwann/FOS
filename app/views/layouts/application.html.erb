@@ -26,11 +26,21 @@
              <span class="icon-bar"></span>
              <span class="icon-bar"></span>
            </button>
-           <a class="navbar-brand" href="/orders">FOS</a>
+           <a class="navbar-brand" href="/products">FOS</a>
 
-    	</div>
+        </div>
+
+	<% if session[:password] %>
+                 <a class="navbar-brand" style="float: right;" href="/logout">Log out</a>
                  <a class="navbar-brand" style="float: right;" href="/take_orders">Take Orders</a>
                  <a class="navbar-brand" style="float: right;" href="/tables">Tables</a>
+
+	<% else %>
+                 <a class="navbar-brand" style="float: right;" href="/login">Log in</a>
+
+	<% end %>
+      
+
        </div>
     </div>
       

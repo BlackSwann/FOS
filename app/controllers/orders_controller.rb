@@ -74,7 +74,7 @@ class OrdersController < ApplicationController
   def destroy
     @order.destroy
     respond_to do |format|
-      format.html { redirect_to orders_url, notice: 'Order was successfully destroyed.' }
+      format.html { redirect_to orders_take_orders_path, notice: 'Order was successfully destroyed.' }
       format.json { head :no_content }
     end
   end

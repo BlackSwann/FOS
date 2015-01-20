@@ -1,0 +1,10 @@
+<h1>LOGIN</h1>
+
+<%= form_tag(sessions_path, :method => 'post') do %>
+	Password: <%= text_field_tag 'password', nil,  type: "password" %>
+
+        <%#= submit_tag 'Submit' %>
+
+<% end %>
+
+<%= link_to 'Back', root_path %>

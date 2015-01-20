@@ -52,3 +52,4 @@ end
 gem "nested_form"
 gem 'carrierwave'
 gem 'mini_magick', '3.8.0'
+gem 'thin'

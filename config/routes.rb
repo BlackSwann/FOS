@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  get 'sessions/create'
+
+  get 'sessions/destroy'
+
+  get 'login', :controller => :sessions, :action => 'new'
+  get 'logout', :controller => :sessions, :action => 'destroy'
+
+  resources :sessions
+
   resources :tables
 
   resources :table_states
