@@ -4,19 +4,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import android.app.ListActivity;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class OrdersActivity extends ListActivity {
-
-	String[] orderList = {};
+	
 	ListView lView;
+	ArrayAdapter<String> adapter;
+	
+	String[] orderList = {};
+	HashMap<String,String> ordersMap = new HashMap<String,String>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,86 +41,35 @@ public class OrdersActivity extends ListActivity {
 
 	protected void setupListView()
 	{	
-		//Adapter für die Liste die angezeigt werden soll
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, orderList);
+		//nur wenn überhautp Internetverbindung vorhanden ist holen
+		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+        		new OrderPoller().execute();
+        }else{
+        	orderList = new String[] {"keine Netzwerkverbindung"};
+        }
+        
+      //Eventlistener hinzufuegen der auf die gewuenschte Activity umschaltet
+  		lView.setOnItemClickListener(new OnItemClickListener(){
 
-		lView = getListView();
-		lView.setAdapter(adapter);
-		
-		adapter.add("No Orders");
-		
-		ArrayList<HashMap<String,String>> allOrders = new ArrayList<HashMap<String,String>>();
-		
-		try {			
-			//hole alle Bestellungen vom WebService holen
-			//allOrders = MainActivity.parseJson(Localhost.orders().getAsJson(String.class));
-			allOrders = MainActivity.parseJson(FOS_Client.getOrders());
-			
-			//loesche alle Eintraege
-			adapter.clear();
-			
-			//alle geholten Produkte hinzufuegen
-			for(HashMap<String,String> product : allOrders){
-				adapter.add( product.get("name") );
-			}
+  			@Override
+  			public void onItemClick(AdapterView<?> parent, View view,
+  					int position, long id) {
+  				// TODO Auto-generated method stub
+  				TextView clickedText = (TextView)view;
 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		finally{
-			Toast.makeText(OrdersActivity.this, 
-								"Beim der Verbindung mit dem Service ist ein Fehler ist aufgetreten",
-								Toast.LENGTH_LONG
-							).show();
-		}
-		
-		//hinzufuegen der geholten Products zur ProductsListView
-		String key = "", val = "";
-			
-		for(HashMap<String,String> map : allOrders)
-		{
-			for(Entry<String,String> entry : map.entrySet())
-			{
-				key = entry.getKey();
-				if(key.contains("name"))
-				{
-					//key = entry.getKey();
-					val = entry.getValue();
-					
-					//TODO products in ListView einfuegen
-					adapter.add(val);				
-				}
-				else{
-					//TODO ID usw muss auch gemerkt werden
-					continue;
-				}
-			}
-		}
-		
-		//Eventlistener hinzufuegen der auf die gewuenschte Activity umschaltet
-		lView.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				//boolean clickedProducts = true;
-				
-				//TODO products senden
-				/*if(clickedProducts)
-					startActivity(new Intent(OrdersActivity.this, ProductsActivity.class));
-				else
-					startActivity(new Intent(OrdersActivity.this, OrdersActivity.class));
-					*/
-			}
-		});
-		
-		//products in ListView einfügen
-	}
-	
-	@Override
-	public void onListItemClick(ListView l,View v, int position, long id){
-		
+  				//TODO in HASHMAP suchen und createOrder
+  				
+  				//Product oder Orders geklickt?
+  				/*if(productList[0].toString() == clickedText.getText())
+  					startActivity(new Intent(ProductsActivity.this, ProductsActivity.class));
+  				else if(productList[1].toString() == clickedText.getText())
+  					startActivity(new Intent(ProductsActivity.this, ProductsActivity.class));
+  				*/
+  			}
+  			
+  		});
 	}
 	
 	@Override
@@ -127,5 +89,78 @@ public class OrdersActivity extends ListActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	private class OrderPoller extends AsyncTask<Void,Void,JSONArray>{
+
+		/**
+		 * request the Productsresource of the webservice
+		 * 
+		 * @return an JSONArray with all Products and their infomations
+		 */
+		@SuppressWarnings("finally")
+		@Override
+		protected JSONArray doInBackground(Void... params) {
+			JSONArray arr = new JSONArray();
+			try {
+				arr = FOSProxy.getOrders();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}finally{
+				return arr;
+			}
+		}
+		
+		/**
+		 * Fills the View with the Productnames from the previous retrieved JSONArray
+		 */
+		@Override
+		public void onPostExecute(JSONArray result)
+		{
+			
+			//Falls keine Elemente -> leerer ListView
+			//sonst parsen und an ListView binden
+			if(0 < result.length())
+			{
+				//Das JSON-Array parsen und als HashMapspeichern
+				String key, val;
+				for(int i=0; i<result.length(); i++)
+				{
+					key = "";
+					val = "";
+					
+					try {
+						key = result.getJSONObject(i).getString("name");
+						val = result.getJSONObject(i).getString("id");
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+
+					ordersMap.put(key, val);
+				}
+				
+				//Parsing the JSONArray
+				ArrayList<String> parsedOrdersList = new ArrayList<String>();
+				
+				try {
+					parsedOrdersList.addAll(MainActivity.parseJson2(result));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+				//listView mit den Geparsten werten bestücken
+				OrdersActivity.this.orderList =
+						parsedOrdersList.toArray(OrdersActivity.this.orderList);
+			}
+			else{
+				OrdersActivity.this.orderList = 
+						new String[]{"Keine Bestellungen gefunden"};
+			}
+			
+			adapter = new ArrayAdapter<String>(OrdersActivity.this,
+					android.R.layout.simple_list_item_1, orderList);
+			OrdersActivity.this.setListAdapter(adapter);
+			lView = getListView();
+		}	
 	}
 }
