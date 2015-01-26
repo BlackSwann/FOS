@@ -27,6 +27,9 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.json.impl.provider.entity.JSONRootElementProvider;
 
 //import org.glassfish.jersey.client.ClientConfig;
 
@@ -47,9 +50,16 @@ public class FOS_Client {
 //	private WebTarget tablesWebTarget;
 	
 	static{
-		client = Client.create();
+		ClientConfig cfg = new DefaultClientConfig();
+		cfg.getClasses().add(JSONRootElementProvider.class);
 		
-		resource = client.resource("http://10.0.2.2:3000/");
+		client = Client.create(cfg);
+		client.setFollowRedirects(true);
+		
+		//client = Client.create();
+
+		//resource = client.resource("http://10.0.2.2:3000/");
+		resource = client.resource("http://localhost:3000/products");
 		//resource = client.asyncResource("http://10.0.2.2:3000/");
 	}
 	
@@ -96,20 +106,36 @@ public class FOS_Client {
 	{		
 		resource.path("products");
 		
-		//resource.type(MediaType.APPLICATION_JSON_TYPE);
+		//resource.type(MediaType.APPLICATION_JSON);
 		
 		//ClientResponse response = resource.get(ClientResponse.class);
 		//ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
-		Builder b = resource.accept("application/json");
-		ClientResponse response = b.get(ClientResponse.class);
+		//Builder b = resource.accept("application/json");
+		String response = resource.accept(
+		        MediaType.APPLICATION_JSON_TYPE).
+		        //header("X-FOO", "BAR").
+		        get(String.class);
+		
+		JSONArray arr = null;
+		try {
+			arr = new JSONArray(response);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+//		Builder b = resource.accept("application/json").type(MediaType.APPLICATION_JSON);
+//		
+//		//ClientResponse response = b.get(ClientResponse.class);
+//		ClientResponse response =  b.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 		
 
-		if (response.getStatus() != 200) {
-			throw new RuntimeException("Failed : HTTP error code : "+ response.getStatus());
-		}
+//		if (response.getStatus() != 200) {
+//			throw new RuntimeException("Failed : HTTP error code : "+ response.getStatus());
+//		}
 		
 		//String output = response.getEntity(String.class);
-		JSONArray arr = response.getEntity(JSONArray.class);
+//		JSONArray arr = response.getEntity(JSONArray.class);
 		/*JSONArray arr = null;
 		
 		try {

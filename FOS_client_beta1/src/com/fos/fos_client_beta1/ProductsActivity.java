@@ -1,5 +1,12 @@
 package com.fos.fos_client_beta1;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -7,6 +14,10 @@ import javax.ws.rs.core.MediaType;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.WebResource.Builder;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -30,7 +41,9 @@ public class ProductsActivity extends ListActivity {
 	String[] productList = {};
 	ListView lView;
 	ArrayAdapter<String> adapter;
-	GridLayout contentGrid;
+	//GridLayout contentGrid;
+	
+	String serviceUrl ="http://10.0.2.2:3000/";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -190,8 +203,17 @@ public class ProductsActivity extends ListActivity {
 		 */
 		@Override
 		protected JSONArray doInBackground(Void... params) {
-			// TODO Auto-generated method stub
-			return FOS_Client.getProducts();
+			//return FOS_Client.getProducts();
+			//return this.getProducts();
+			JSONArray arr=null;
+			try {
+				arr = this.Test();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return arr;
 		}
 		
 		/**
@@ -217,6 +239,82 @@ public class ProductsActivity extends ListActivity {
 						android.R.layout.simple_list_item_1, productList);
 				ProductsActivity.this.setListAdapter(adapter);
 				lView = getListView();
-		}		
+		}
+		
+		private JSONArray Test() throws IOException{
+			
+			URL url=null;
+			String path = "products.json";
+			
+			try {
+				url = new URL(serviceUrl+path);
+			} catch (MalformedURLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			
+	        conn.setReadTimeout(10000 /* milliseconds */);
+	        conn.setConnectTimeout(15000 /* milliseconds */);
+	        
+	        try {
+				conn.setRequestMethod("GET");
+			} catch (ProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        
+	        conn.setDoInput(true);
+	        
+	        // Starts the query
+			conn.connect();
+	        int response = conn.getResponseCode();
+	        
+	        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line+"\n");
+            }
+            br.close();
+            
+            //oast.makeText(getApplicationContext(), sb.toString(), Toast.LENGTH_LONG).show();
+            
+            JSONArray result = new JSONArray();
+			try {
+				result = new JSONArray(sb.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return result;
+		}
+		
+		private JSONArray getProducts()
+		{		
+			Client client = Client.create();
+			WebResource resource = client.resource(serviceUrl);
+			resource = resource.path("products");
+			
+			//resource.type(MediaType.APPLICATION_JSON);
+			
+			//ClientResponse response = resource.get(ClientResponse.class);
+			//ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
+			//Builder b = resource.accept("application/json");
+			Builder b = resource.accept(MediaType.APPLICATION_JSON_TYPE);
+			String response = b.get(String.class);
+			
+			JSONArray arr = null;
+			try {
+				arr = new JSONArray(response);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return arr;
+		}
 	}
 }
