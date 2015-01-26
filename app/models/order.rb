@@ -19,10 +19,10 @@ accepts_nested_attributes_for :order_details, :allow_destroy => true, :reject_if
 
   private
   def invalid_amount(attributes)
-	  attributes['amount'].blank?
+	  attributes['amount'].nil?
   end
   def invalid_product(attributes)
-	  attributes['product'].blank?
+	  attributes['product_id'].blank?
   end
 
 end
