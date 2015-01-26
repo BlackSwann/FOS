@@ -99,7 +99,7 @@ public class MainActivity extends ListActivity {
 		return result;
 	}
 
-	/*@Override 
+	@Override 
 	public void onListItemClick(ListView l,View v, int position, long id){
 		TextView clickedText = (TextView)v;
 
@@ -108,14 +108,16 @@ public class MainActivity extends ListActivity {
 			startActivity(new Intent(MainActivity.this, ProductsActivity.class));
 		else if(optionList[1].toString() == clickedText.getText())
 			startActivity(new Intent(MainActivity.this, OrdersActivity.class));
-	}*/
+	}
 	
-	protected static JSONArray parseJson2(String jsonString) throws JSONException{
-		JSONArray arr = new JSONArray(jsonString);
+	protected static ArrayList<String> parseJson2(JSONArray arr) throws JSONException{
 		
-		//System.out.println(arr.getJSONObject(0).getString("name"));
+		ArrayList<String> result = new ArrayList<String>();
 		
-		return arr;
+		for(int i=0; i<arr.length(); i++)
+			result.add(arr.getJSONObject(i).getString("name"));
+		
+		return result;
 	}
 	
     @Override

@@ -41,7 +41,8 @@ public class OrdersActivity extends ListActivity {
 		
 		try {			
 			//hole alle Bestellungen vom WebService holen
-			allOrders = MainActivity.parseJson(Localhost.orders().getAsJson(String.class));
+			//allOrders = MainActivity.parseJson(Localhost.orders().getAsJson(String.class));
+			allOrders = MainActivity.parseJson(FOS_Client.getOrders());
 			
 			//loesche alle Eintraege
 			adapter.clear();

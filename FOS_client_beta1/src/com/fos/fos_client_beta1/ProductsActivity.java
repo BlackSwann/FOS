@@ -2,7 +2,17 @@ package com.fos.fos_client_beta1;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.ws.rs.core.MediaType;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import android.app.ListActivity;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +29,7 @@ public class ProductsActivity extends ListActivity {
 
 	String[] productList = {};
 	ListView lView;
+	ArrayAdapter<String> adapter;
 	GridLayout contentGrid;
 	
 	@Override
@@ -32,16 +43,24 @@ public class ProductsActivity extends ListActivity {
 	
 	public void setupListView()
 	{
-		//holt alle products und speichert sie in der productList
-		getAllProd();
+		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+        	new Poller().execute();
+        }else{
+        	productList = new String[] {"keine Netzwerkverbindung"};
+        }
+	        	
 		
-		lView = getListView();
+//		getAllProd();
 		
-		//Adapter für die Liste die angezeigt werden soll
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, productList);
-
-		lView.setAdapter(adapter);
+//		lView = getListView();
+//		
+//		//Adapter für die Liste die angezeigt werden soll
+//		adapter = new ArrayAdapter<String>(this,
+//				android.R.layout.simple_list_item_1, productList);
+//
+//		lView.setAdapter(adapter);
 		
 		
 		
@@ -68,34 +87,48 @@ public class ProductsActivity extends ListActivity {
 		}*/
 		
 		//Eventlistener hinzufuegen der auf die gewuenschte Activity umschaltet
-		lView.setOnItemClickListener(new OnItemClickListener(){
+		/*lView.setOnItemClickListener(new OnItemClickListener(){
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Toast.makeText(ProductsActivity.this, "auf ein Produkt geklickt", Toast.LENGTH_LONG)
-						.show();
+				//Toast.makeText(ProductsActivity.this, "auf ein Produkt geklickt", Toast.LENGTH_LONG).show();
 
 				//boolean clickedProducts = true;
 				
 				//TODO products senden
-				/*if(clickedProducts)
-					startActivity(new Intent(ProductsActivity.this, ProductsActivity.class));
-				else
-					startActivity(new Intent(ProductsActivity.this, OrdersActivity.class));
-					*/
+//				if(clickedProducts)
+//					startActivity(new Intent(ProductsActivity.this, ProductsActivity.class));
+//				else
+//					startActivity(new Intent(ProductsActivity.this, OrdersActivity.class));
+//					
 				
 			}
-		});
+		});*/
 		
 		//products in ListView einfügen
 	}
 	
 	//private ArrayList<HashMap<String,String>> getAllProd(){
-	private void getAllProd(){
+	protected void getAllProd(){
 		
 		ArrayList<HashMap<String,String>> allProducts = new ArrayList<HashMap<String,String>>();
 		
-		allProducts = MainActivity.parseJson(Localhost.products().getAsJson(String.class));
+		try {
+			//String response = Localhost.products().getAsJson(String.class);
+			//String response = FOS_Client.getProducts();
+			
+			FOS_Client.getProductsAsync(this);
+			
+			//is done in Products
+			//allProducts = MainActivity.parseJson(response); 
+				
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//FOS_Client client = new FOS_Client();
+		
 		/*
 		try {			
 			//hole alle Produkte vom WebService
@@ -128,7 +161,7 @@ public class ProductsActivity extends ListActivity {
 		
 		//return allProducts;
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -146,5 +179,44 @@ public class ProductsActivity extends ListActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	private class Poller extends AsyncTask<Void,Void,JSONArray>{
+
+		/**
+		 * request the Productsresource of the webservice
+		 * 
+		 * @return an JSONArray with all Products and their infomations
+		 */
+		@Override
+		protected JSONArray doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			return FOS_Client.getProducts();
+		}
+		
+		/**
+		 * Fills the View with the Productnames from the previous retrieved JSONArray
+		 */
+		@Override
+		public void onPostExecute(JSONArray result){
+			
+				//Parsing the JSONArray
+				ArrayList<String> productsList = new ArrayList<String>();
+				
+				try {
+					productsList.addAll(MainActivity.parseJson2(result));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+				//listView mit den Geparsten werten bestücken
+				ProductsActivity.this.productList =
+						productsList.toArray(ProductsActivity.this.productList);
+
+				adapter = new ArrayAdapter<String>(ProductsActivity.this,
+						android.R.layout.simple_list_item_1, productList);
+				ProductsActivity.this.setListAdapter(adapter);
+				lView = getListView();
+		}		
 	}
 }
