@@ -45,31 +45,11 @@ public class OrdersActivity extends ListActivity {
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
+        		//asynchron die Daten holen
         		new OrderPoller().execute();
         }else{
         	orderList = new String[] {"keine Netzwerkverbindung"};
         }
-        
-      //Eventlistener hinzufuegen der auf die gewuenschte Activity umschaltet
-  		lView.setOnItemClickListener(new OnItemClickListener(){
-
-  			@Override
-  			public void onItemClick(AdapterView<?> parent, View view,
-  					int position, long id) {
-  				// TODO Auto-generated method stub
-  				TextView clickedText = (TextView)view;
-
-  				//TODO in HASHMAP suchen und createOrder
-  				
-  				//Product oder Orders geklickt?
-  				/*if(productList[0].toString() == clickedText.getText())
-  					startActivity(new Intent(ProductsActivity.this, ProductsActivity.class));
-  				else if(productList[1].toString() == clickedText.getText())
-  					startActivity(new Intent(ProductsActivity.this, ProductsActivity.class));
-  				*/
-  			}
-  			
-  		});
 	}
 	
 	@Override
@@ -157,10 +137,34 @@ public class OrdersActivity extends ListActivity {
 						new String[]{"Keine Bestellungen gefunden"};
 			}
 			
+			//Alles der View hinzufügen
 			adapter = new ArrayAdapter<String>(OrdersActivity.this,
 					android.R.layout.simple_list_item_1, orderList);
 			OrdersActivity.this.setListAdapter(adapter);
 			lView = getListView();
+			
+			//Eventlistener hinzufuegen der auf die gewuenschte Activity umschaltet
+	        lView.setOnItemClickListener(new OnItemClickListener(){
+
+	  			@Override
+	  			public void onItemClick(AdapterView<?> parent, View view,
+	  					int position, long id) {
+	  				// TODO Auto-generated method stub
+	  				TextView clickedText = (TextView)view;
+	  				
+	  				Toast.makeText(OrdersActivity.this, clickedText.getText(),
+	  						Toast.LENGTH_LONG).show();
+
+	  				//TODO in HASHMAP suchen und createOrder
+	  				
+	  				//Product oder Orders geklickt?
+//	  				if(productList[0].toString() == clickedText.getText())
+//	  					startActivity(new Intent(ProductsActivity.this, ProductsActivity.class));
+//	  				else if(productList[1].toString() == clickedText.getText())
+//	  					startActivity(new Intent(ProductsActivity.this, ProductsActivity.class));
+	  				
+	  			}
+	  		});
 		}	
 	}
 }

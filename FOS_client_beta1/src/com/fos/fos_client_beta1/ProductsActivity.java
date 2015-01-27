@@ -53,61 +53,18 @@ public class ProductsActivity extends ListActivity {
 		
 		setupListView();
 	}
-	
-	
+
 	public void setupListView()
 	{
 		//nur wenn überhautp Internetverbindung vorhanden ist holen
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
+        		//Asynchron die Daten abfragen
         		new ProductPoller().execute();
         }else{
         	productList = new String[] {"keine Netzwerkverbindung"};
         }
-        
-		//hinzufuegen der geholten Products zur ProductsListView
-		/*String key = "", val = "";
-			
-		for(HashMap<String,String> map : allProducts)
-		{
-			for(Entry<String,String> entry : map.entrySet())
-			{
-				if((key = entry.getKey()).contains("name"))
-				{
-					//key = entry.getKey();
-					val = entry.getValue();
-					
-					//TODO products in ListView einfuegen
-					adapter.add(val);				
-				}
-				else{
-					//TODO ID usw muss auch gemerkt werden
-					continue;
-				}
-			}
-		}*/
-		
-        //Eventlistener hinzufuegen der auf die gewuenschte Activity umschaltet
-		lView.setOnItemClickListener(new OnItemClickListener(){
-	
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				// TODO Auto-generated method stub
-				TextView clickedText = (TextView)view;
-	
-				//TODO in HASHMAP suchen und createOrder
-				
-				//Product oder Orders geklickt?
-				/*if(productList[0].toString() == clickedText.getText())
-					startActivity(new Intent(ProductsActivity.this, ProductsActivity.class));
-				else if(productList[1].toString() == clickedText.getText())
-					startActivity(new Intent(ProductsActivity.this, ProductsActivity.class));
-				*/
-			}
-			
-		});
   	}	
 	
 	@Override
@@ -196,10 +153,34 @@ public class ProductsActivity extends ListActivity {
 						new String[]{"Keine Produkte gefunden"};
 			}
 			
+			//Alles der View hinzufügen
 			adapter = new ArrayAdapter<String>(ProductsActivity.this,
 					android.R.layout.simple_list_item_1, productList);
 			ProductsActivity.this.setListAdapter(adapter);
 			lView = getListView();
+			
+			//Listener erstellen
+			lView.setOnItemClickListener(new OnItemClickListener(){
+				
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					// TODO Auto-generated method stub
+					TextView clickedText = (TextView)view;
+		
+					Toast.makeText(ProductsActivity.this,
+							clickedText.getText(), Toast.LENGTH_LONG).show();
+					//TODO in HASHMAP suchen und createOrder
+					
+					//Product oder Orders geklickt?
+//					if(productList[0].toString() == clickedText.getText())
+//						startActivity(new Intent(ProductsActivity.this, ProductsActivity.class));
+//					else if(productList[1].toString() == clickedText.getText())
+//						startActivity(new Intent(ProductsActivity.this, ProductsActivity.class));
+					
+				}
+				
+			});
 		}	
 	}
 }

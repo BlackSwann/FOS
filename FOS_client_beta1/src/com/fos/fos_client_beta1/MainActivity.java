@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.GridLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * This Android-Client is intended to work with the Fast Ordering System - Webservice.
@@ -31,7 +32,7 @@ public class MainActivity extends ListActivity {
 
 	String[] optionList = {"Products","Your Orders"};
 	ListView lView;
-	GridLayout contentGrid;
+	int tableNumber = 1; 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -39,6 +40,8 @@ public class MainActivity extends ListActivity {
 		setContentView(R.layout.activity_main);
 		
 		setupListView();
+		
+		//TODO getTableNumber
 	}
 	
 	protected void setupListView()
@@ -68,6 +71,11 @@ public class MainActivity extends ListActivity {
 			}
 			
 		});
+		
+		//TODO get first free table
+		
+		Toast.makeText(MainActivity.this, "You are on table "+this.tableNumber,
+						Toast.LENGTH_LONG).show();
 	}
 	
 	protected static ArrayList<HashMap<String,String>> parseJson(String asJson) {
@@ -134,10 +142,17 @@ public class MainActivity extends ListActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+    	
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
         }
+        
+        //falls beenden geklickt -> aktivity.finish
+        if(item.getTitle().toString().contains("Beenden")){
+        	finish();
+        }
+        
         return super.onOptionsItemSelected(item);
     }
 }
