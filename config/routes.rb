@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   get 'sessions/create'
 
   get 'sessions/destroy'
-
+  get "orders/create", :controller => :orders, :action => "create"
   get 'login', :controller => :sessions, :action => 'new'
   get 'logout', :controller => :sessions, :action => 'destroy'
 
@@ -23,6 +23,10 @@ Rails.application.routes.draw do
   resources :product_types
 
   get 'take_orders', :as => 'orders/take_orders', :controller => :orders
+
+  #resources :rest
+  #for rest
+  get 'tables/:id/orders/', :controller => :rest, :action => "alltableorders"
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
